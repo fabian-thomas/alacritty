@@ -59,6 +59,7 @@ where
     let mut command = Command::new(program);
     command.args(args).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
     if let Ok(cwd) = foreground_process_path(master_fd, shell_pid) {
+        command.env("PWD", &cwd);
         command.current_dir(cwd);
     }
     unsafe {
@@ -104,5 +105,10 @@ pub fn foreground_process_path(
     #[cfg(target_os = "macos")]
     let cwd = macos::proc::cwd(pid)?;
 
-    Ok(cwd)
+    // if the pwd information is available use it
+    let pwd_path = format!("/tmp/pwds/{}/pwd", pid);
+    match fs::read_to_string(&pwd_path) {
+        Ok(v) => Ok(PathBuf::from(v.trim_end())),
+        Err(_) => Ok(cwd)
+    }
 }
