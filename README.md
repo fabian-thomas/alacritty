@@ -10,6 +10,38 @@
        src="https://user-images.githubusercontent.com/8886672/103264352-5ab0d500-49a2-11eb-8961-02f7da66c855.png">
 </p>
 
+## Motivation
+
+I use symlinks quite a lot to quickly get to topics I'm working on.
+Thereby, I usually symlink dirs to my home directory.
+This has the additional advantage, that the working directory is pretty short.
+When spawning a new terminal instance from Alacritty (SpawnNewInstance), the information about the symlink is lost because the kernel does not know about the symlink.
+The information in the `procfs` that is used by default only contains the canonical working directory, not the one your shell shows you.
+We can fix that by logging the working directory from our shell and then instructing alacritty to use that information.
+
+### Setup
+
+This currently only works for `zsh`.
+The shell needs to support some function that is executed on switching it's working directory.
+Paste the following into your `zshrc`.
+```sh
+# log pwd without symlinks stripped so that we can spawn new terminals
+# with this information
+mkdir -p "/tmp/pwds/$$"
+function chpwd {
+    echo "$PWD" > "/tmp/pwds/$$/pwd"
+}
+function zshexit {
+    rm -rf "/tmp/pwds/$$"
+}
+```
+
+Then compile Alacritty and copy the binary:
+``` sh
+cargo build --release
+sudo cp target/release/alacritty `which alacritty`
+```
+
 ## About
 
 Alacritty is a modern terminal emulator that comes with sensible defaults, but
