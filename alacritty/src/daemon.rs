@@ -86,13 +86,10 @@ where
 /// Get working directory of controlling process.
 #[cfg(not(windows))]
 pub fn foreground_process_path(
-    master_fd: RawFd,
+    _master_fd: RawFd,
     shell_pid: u32,
 ) -> Result<PathBuf, Box<dyn Error>> {
-    let mut pid = unsafe { libc::tcgetpgrp(master_fd) };
-    if pid < 0 {
-        pid = shell_pid as pid_t;
-    }
+    let pid = shell_pid as pid_t;
 
     #[cfg(not(any(target_os = "macos", target_os = "freebsd")))]
     let link_path = format!("/proc/{}/cwd", pid);
