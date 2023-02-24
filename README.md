@@ -19,6 +19,8 @@ mkdir -p "/tmp/pwds/$$"
 function chpwd {
     echo "$PWD" > "/tmp/pwds/$$/pwd"
 }
+# store initial pwd
+chpwd
 function zshexit {
     rm -rf "/tmp/pwds/$$"
 }
