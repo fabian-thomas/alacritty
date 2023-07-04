@@ -120,7 +120,7 @@ pub trait ActionContext<T: EventListener> {
     fn trigger_hint(&mut self, _hint: &HintMatch) {}
     fn expand_selection(&mut self) {}
     fn paste(&mut self, _text: &str) {}
-    fn spawn_daemon<I, S>(&self, _program: &str, _args: I)
+    fn spawn_daemon<I, S>(&mut self, _program: &str, _args: I)
     where
         I: IntoIterator<Item = S> + Debug + Copy,
         S: AsRef<OsStr>,
