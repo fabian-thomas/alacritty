@@ -897,13 +897,14 @@ impl<'a, N: Notify + 'a, T: EventListener> input::ActionContext<T> for ActionCon
             .send_event(Event::new(EventType::CreateWindow(WindowOptions::default()), None));
     }
 
-    fn spawn_daemon<I, S>(&self, program: &str, args: I)
+    fn spawn_daemon<I, S>(&mut self, program: &str, args: I)
     where
         I: IntoIterator<Item = S> + Debug + Copy,
         S: AsRef<OsStr>,
     {
         #[cfg(not(windows))]
-        let result = spawn_daemon(program, args, self.master_fd, self.shell_pid);
+        let window_id: u64 = self.display.window.id().into();
+        let result = spawn_daemon(program, args, self.master_fd, self.shell_pid, window_id);
         #[cfg(windows)]
         let result = spawn_daemon(program, args);
 
