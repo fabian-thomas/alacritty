@@ -51,6 +51,7 @@ pub fn spawn_daemon<I, S>(
     args: I,
     master_fd: RawFd,
     shell_pid: u32,
+    window_id: u64
 ) -> io::Result<()>
 where
     I: IntoIterator<Item = S> + Copy,
@@ -61,6 +62,7 @@ where
     if let Ok(cwd) = foreground_process_path(master_fd, shell_pid) {
         command.current_dir(cwd);
     }
+    command.env("PREV_WINDOWID", format!("{}", window_id));
     unsafe {
         command
             .pre_exec(|| {
