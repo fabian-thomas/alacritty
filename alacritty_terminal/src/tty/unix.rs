@@ -183,14 +183,14 @@ fn default_shell_command(shell: &str, user: &str) -> Command {
 }
 
 /// Create a new TTY and return a handle to interact with it.
-pub fn new(config: &Options, window_size: WindowSize, window_id: u64) -> Result<Pty> {
+pub fn new(config: &Options, window_size: WindowSize, window_id: u64, rand_windowid: u64) -> Result<Pty> {
     let pty = openpty(None, Some(&window_size.to_winsize()))?;
     let (master, slave) = (pty.controller, pty.user);
-    from_fd(config, window_id, master, slave)
+    from_fd(config, window_id, rand_windowid, master, slave)
 }
 
 /// Create a new TTY from a PTY's file descriptors.
-pub fn from_fd(config: &Options, window_id: u64, master: OwnedFd, slave: OwnedFd) -> Result<Pty> {
+pub fn from_fd(config: &Options, window_id: u64, rand_windowid: u64, master: OwnedFd, slave: OwnedFd) -> Result<Pty> {
     let master_fd = master.as_raw_fd();
     let slave_fd = slave.as_raw_fd();
 
@@ -223,6 +223,15 @@ pub fn from_fd(config: &Options, window_id: u64, master: OwnedFd, slave: OwnedFd
     builder.env("HOME", user.home);
     // Set Window ID for clients relying on X11 hacks.
     builder.env("WINDOWID", window_id);
+    builder.env("RAND_WINDOWID", format!("{}", rand_windowid));
+
+    if let Some(prev_windowid) = &config.prev_windowid {
+        builder.env("PREV_WINDOWID", format!("{}", prev_windowid));
+    }
+    if let Some(prev_rand_windowid) = &config.prev_rand_windowid {
+        builder.env("PREV_RAND_WINDOWID", format!("{}", prev_rand_windowid));
+    }
+
     for (key, value) in &config.env {
         builder.env(key, value);
     }
