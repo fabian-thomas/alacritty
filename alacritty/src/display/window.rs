@@ -3,6 +3,8 @@ use winit::platform::startup_notify::{
     self, EventLoopExtStartupNotify, WindowBuilderExtStartupNotify,
 };
 
+use rand::Rng;
+
 #[cfg(all(not(feature = "x11"), not(any(target_os = "macos", windows))))]
 use winit::platform::wayland::WindowBuilderExtWayland;
 
@@ -115,6 +117,8 @@ pub struct Window {
     is_x11: bool,
     current_mouse_cursor: CursorIcon,
     mouse_visible: bool,
+
+    pub rand_window_id: u64,
 }
 
 impl Window {
@@ -187,6 +191,9 @@ impl Window {
         #[cfg(target_os = "macos")]
         use_srgb_color_space(&window);
 
+        let mut rng = rand::thread_rng();
+        let rand_window_id: u64 = rng.gen_range(0..10000000);
+
         let scale_factor = window.scale_factor();
         log::info!("Window scale factor: {}", scale_factor);
         let is_x11 = matches!(window.raw_window_handle(), RawWindowHandle::Xlib(_));
@@ -200,6 +207,7 @@ impl Window {
             scale_factor,
             window,
             is_x11,
+            rand_window_id,
         })
     }
 

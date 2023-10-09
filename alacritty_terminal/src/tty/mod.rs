@@ -33,6 +33,9 @@ pub struct Options {
 
     /// Extra environment variables.
     pub env: HashMap<String, String>,
+
+    pub prev_windowid: Option<u64>,
+    pub prev_rand_windowid: Option<u64>,
 }
 
 /// Shell options.

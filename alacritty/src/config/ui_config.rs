@@ -172,6 +172,8 @@ impl UiConfig {
             working_directory: self.working_directory.clone(),
             hold: false,
             env: HashMap::new(),
+            prev_windowid: None,
+            prev_rand_windowid: None,
         }
     }
 
