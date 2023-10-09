@@ -9,22 +9,31 @@ We can fix that by logging the working directory from our shell and then instruc
 
 ### Setup
 
-This currently only works for `zsh`.
-The shell needs to support some function that is executed on switching it's working directory.
-Paste the following into your `zshrc`.
+Alacritty by default exports the Xorg window id in the environment variable `WINDOW_ID`.
+That makes it possible to log the current pwd for each alacritty window with help from your shell.
+For alacritty this can be achieved with the following code in your `zshrc`:
 ```sh
 # log pwd without symlinks stripped so that we can spawn new terminals
 # with this information
-mkdir -p "/tmp/pwds/$$"
+mkdir -p "/tmp/pwds/$WINDOW_ID"
 function chpwd {
-    echo "$PWD" > "/tmp/pwds/$$/pwd"
+    echo "$PWD" > "/tmp/pwds/$WINDOW_ID/pwd"
 }
 # store initial pwd
 chpwd
 function zshexit {
-    rm -rf "/tmp/pwds/$$"
+    rm -rf "/tmp/pwds/$WINDOW_ID"
 }
 ```
+
+On shell launch you can then further use the `PREV_WINDOW_ID` environment variable that this fork adds to change the shell directory:
+``` sh
+if [ -n "$PREV_WINDOW_ID" ] && [ -f "/tmp/pwds/$PREV_WINDOW_ID/pwd" ]; then
+    cd "$(cat "/tmp/pwds/$PREV_WINDOW_ID/pwd")"
+fi
+```
+
+This fork further adds `RAND_WINDOW_ID` and `PREV_RAND_WINDOW_ID` since Xorg window ids are reused when you kill and spawn a new window.
 
 Then compile Alacritty and copy the binary:
 ``` sh
