@@ -200,7 +200,7 @@ impl WindowContext {
         // The PTY forks a process to run the shell on the slave side of the
         // pseudoterminal. A file descriptor for the master side is retained for
         // reading/writing to the shell.
-        let pty = tty::new(&pty_config, display.size_info.into(), display.window.id().into())?;
+        let pty = tty::new(&pty_config, display.size_info.into(), display.window.id().into(), display.window.rand_window_id)?;
 
         #[cfg(not(windows))]
         let master_fd = pty.file().as_raw_fd();

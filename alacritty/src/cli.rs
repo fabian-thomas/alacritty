@@ -197,6 +197,9 @@ pub struct TerminalOptions {
     /// Command and args to execute (must be last argument).
     #[clap(short = 'e', long, allow_hyphen_values = true, multiple_values = true)]
     command: Vec<String>,
+
+    pub prev_windowid: Option<u64>,
+    pub prev_rand_windowid: Option<u64>,
 }
 
 impl TerminalOptions {
@@ -220,6 +223,14 @@ impl TerminalOptions {
             pty_config.shell = Some(command);
         }
 
+        if let Some(prev_windowid) = &self.prev_windowid {
+            pty_config.prev_windowid = Some(prev_windowid.to_owned());
+        }
+
+        if let Some(prev_rand_windowid) = &self.prev_rand_windowid {
+            pty_config.prev_rand_windowid = Some(prev_rand_windowid.to_owned());
+        }
+
         pty_config.hold |= self.hold;
     }
 }
@@ -228,6 +239,8 @@ impl From<TerminalOptions> for PtyConfig {
     fn from(mut options: TerminalOptions) -> Self {
         PtyConfig {
             working_directory: options.working_directory.take(),
+            prev_windowid: options.prev_windowid.take(),
+            prev_rand_windowid: options.prev_rand_windowid.take(),
             shell: options.command(),
             hold: options.hold,
         }

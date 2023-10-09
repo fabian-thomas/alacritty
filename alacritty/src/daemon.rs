@@ -51,7 +51,8 @@ pub fn spawn_daemon<I, S>(
     args: I,
     master_fd: RawFd,
     shell_pid: u32,
-    window_id: u64
+    window_id: u64,
+    rand_window_id: u64
 ) -> io::Result<()>
 where
     I: IntoIterator<Item = S> + Copy,
@@ -63,6 +64,7 @@ where
         command.current_dir(cwd);
     }
     command.env("PREV_WINDOWID", format!("{}", window_id));
+    command.env("PREV_RAND_WINDOWID", format!("{}", rand_window_id));
     unsafe {
         command
             .pre_exec(|| {

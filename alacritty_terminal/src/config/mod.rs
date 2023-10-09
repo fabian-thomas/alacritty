@@ -46,6 +46,9 @@ pub struct PtyConfig {
     /// Remain open after child process exits.
     #[config(skip)]
     pub hold: bool,
+
+    pub prev_windowid: Option<u64>,
+    pub prev_rand_windowid: Option<u64>,
 }
 
 impl PtyConfig {
