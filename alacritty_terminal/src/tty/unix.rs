@@ -193,7 +193,7 @@ fn default_shell_command(shell: &str, user: &str) -> Command {
 }
 
 /// Create a new TTY and return a handle to interact with it.
-pub fn new(config: &Options, window_size: WindowSize, window_id: u64) -> Result<Pty> {
+pub fn new(config: &Options, window_size: WindowSize, window_id: u64, rand_windowid: u64) -> Result<Pty> {
     let (master, slave) = make_pty(window_size.to_winsize())?;
     let master_fd = master.as_raw_fd();
     let slave_fd = slave.as_raw_fd();
@@ -231,6 +231,14 @@ pub fn new(config: &Options, window_size: WindowSize, window_id: u64) -> Result<
 
     // Set Window ID for clients relying on X11 hacks.
     builder.env("WINDOWID", window_id);
+    builder.env("RAND_WINDOWID", format!("{}", rand_windowid));
+
+    if let Some(prev_windowid) = &config.prev_windowid {
+        builder.env("PREV_WINDOWID", format!("{}", prev_windowid));
+    }
+    if let Some(prev_rand_windowid) = &config.prev_rand_windowid {
+        builder.env("PREV_RAND_WINDOWID", format!("{}", prev_rand_windowid));
+    }
 
     unsafe {
         builder.pre_exec(move || {
