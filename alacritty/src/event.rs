@@ -841,6 +841,8 @@ impl<'a, N: Notify + 'a, T: EventListener> input::ActionContext<T> for ActionCon
         if let Ok(working_directory) = foreground_process_path(self.master_fd, self.shell_pid) {
             options.terminal_options.working_directory = Some(working_directory);
         }
+        options.terminal_options.prev_windowid = Some(self.display.window.id().into());
+        options.terminal_options.prev_rand_windowid = Some(self.display.window.rand_window_id);
 
         #[cfg(target_os = "macos")]
         {
@@ -864,7 +866,8 @@ impl<'a, N: Notify + 'a, T: EventListener> input::ActionContext<T> for ActionCon
     {
         #[cfg(not(windows))]
         let window_id: u64 = self.display.window.id().into();
-        let result = spawn_daemon(program, args, self.master_fd, self.shell_pid, window_id);
+        let rand_window_id: u64 = self.display.window.rand_window_id;
+        let result = spawn_daemon(program, args, self.master_fd, self.shell_pid, window_id, rand_window_id);
         #[cfg(windows)]
         let result = spawn_daemon(program, args);
 
