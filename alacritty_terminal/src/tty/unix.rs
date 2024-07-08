@@ -227,9 +227,13 @@ pub fn from_fd(config: &Options, window_id: u64, rand_windowid: u64, master: Own
 
     if let Some(prev_windowid) = &config.prev_windowid {
         builder.env("PREV_WINDOWID", format!("{}", prev_windowid));
+    } else {
+        builder.env_remove("PREV_WINDOWID");
     }
     if let Some(prev_rand_windowid) = &config.prev_rand_windowid {
         builder.env("PREV_RAND_WINDOWID", format!("{}", prev_rand_windowid));
+    } else {
+        builder.env_remove("PREV_RAND_WINDOWID");
     }
 
     for (key, value) in &config.env {
