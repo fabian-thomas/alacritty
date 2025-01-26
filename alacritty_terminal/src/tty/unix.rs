@@ -2,6 +2,8 @@
 
 use std::ffi::CStr;
 use std::fs::File;
+use std::fs;
+use std::path::Path;
 use std::io::{Error, ErrorKind, Read, Result};
 use std::mem::MaybeUninit;
 use std::os::fd::OwnedFd;
@@ -232,8 +234,21 @@ pub fn from_fd(config: &Options, window_id: u64, rand_windowid: u64, master: Own
     builder.env("USER", user.user);
     builder.env("HOME", user.home);
     // Set Window ID for clients relying on X11 hacks.
-    builder.env("WINDOWID", window_id);
+    builder.env("WINDOWID", &window_id);
     builder.env("RAND_WINDOWID", format!("{}", rand_windowid));
+
+    // NOTE: this is not done in zshrc as that not always executes when we open a term
+    if let Ok(shell_info_dir) = env::var("SHELL_INFO_DIR") {
+        let window_mapping_dir = Path::new(&shell_info_dir).join("window_mapping");
+        let file_path = window_mapping_dir.join(window_id.to_string());
+
+        if let Err(e) = fs::create_dir_all(&window_mapping_dir) {
+            eprintln!("Failed to create directory {:?}: {:?}", window_mapping_dir, e);
+        }
+        if let Err(e) = fs::write(&file_path, rand_windowid.to_string()) {
+            eprintln!("Failed to write to file {:?}: {:?}", file_path, e);
+        }
+    }
 
     if let Some(prev_windowid) = &config.prev_windowid {
         builder.env("PREV_WINDOWID", format!("{}", prev_windowid));
