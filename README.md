@@ -35,11 +35,19 @@ fi
 
 This fork further adds `RAND_WINDOW_ID` and `PREV_RAND_WINDOW_ID` since Xorg window ids are reused when you kill and spawn a new window.
 
-Then compile Alacritty and copy the binary:
-``` sh
-cargo build --release
-sudo cp target/release/alacritty `which alacritty`
+## Nix package
+
+Test it out without installation:
 ```
+nix run github:fabian-thomas/alacritty
+```
+
+Install it permanently:
+```
+nix profile install github:fabian-thomas/alacritty
+```
+
+# Original README
 
 <p align="center">
     <img width="200" alt="Alacritty Logo" src="https://raw.githubusercontent.com/alacritty/alacritty/master/extra/logo/compat/alacritty-term%2Bscanlines.png">

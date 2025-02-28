@@ -1,0 +1,39 @@
+diff --git a/pkgs/by-name/al/alacritty/package.nix b/pkgs/by-name/al/alacritty/package.nix
+index 6fd102d45387..dfc04a4c568f 100644
+--- a/pkgs/by-name/al/alacritty/package.nix
++++ b/pkgs/by-name/al/alacritty/package.nix
+@@ -23,6 +23,9 @@
+   xdg-utils,
+ 
+   nix-update-script,
++
++  src,
++  version,
+ }:
+ let
+   rpathLibs =
+@@ -44,16 +47,17 @@ let
+ in
+ rustPlatform.buildRustPackage rec {
+   pname = "alacritty";
+-  version = "0.15.1";
+ 
+-  src = fetchFromGitHub {
+-    owner = "alacritty";
+-    repo = "alacritty";
+-    tag = "v${version}";
+-    hash = "sha256-/yERMNfCFLPb1S17Y9OacVH8UobDIIZDhM2qPzf5Vds=";
++  inherit src version;
++
++  cargoLock = {
++    lockFile = "${src}/Cargo.lock";
+   };
+ 
+-  useFetchCargoVendor = true;
++  # Fails because we apparently modify completions
++  doCheck = false;
++
++  useFetchCargoVendor = false;
+   cargoHash = "sha256-uXwefUV1NAKqwwPIWj4Slkx0c5b+RfLR3caTb42fc4M=";
+ 
+   nativeBuildInputs = [
