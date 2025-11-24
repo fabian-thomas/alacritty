@@ -139,6 +139,8 @@ impl UiConfig {
             env: HashMap::new(),
             #[cfg(target_os = "windows")]
             escape_args: false,
+            prev_windowid: None,
+            prev_rand_windowid: None
         }
     }
 

@@ -40,6 +40,9 @@ pub struct Options {
     /// - When `false`: Arguments will be passed raw without additional escaping.
     #[cfg(target_os = "windows")]
     pub escape_args: bool,
+
+    pub prev_windowid: Option<u64>,
+    pub prev_rand_windowid: Option<u64>,
 }
 
 /// Shell options.

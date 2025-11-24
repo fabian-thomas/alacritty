@@ -52,7 +52,8 @@ pub fn spawn_daemon<I, S>(
     args: I,
     master_fd: RawFd,
     shell_pid: u32,
-    window_id: u64
+    window_id: u64,
+    rand_window_id: u64
 ) -> io::Result<()>
 where
     I: IntoIterator<Item = S> + Copy,
@@ -61,6 +62,7 @@ where
     let mut command = Command::new(program);
     command.args(args).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
     command.env("PREV_WINDOWID", format!("{}", window_id));
+    command.env("PREV_RAND_WINDOWID", format!("{}", rand_window_id));
 
     let working_directory = foreground_process_path(master_fd, shell_pid).ok();
     unsafe {
